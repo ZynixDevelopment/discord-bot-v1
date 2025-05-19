@@ -1,0 +1,16 @@
+{
+  "name": "bot-discord-professionnel-multifonction",
+  "version": "1.0.0",
+  "description": "Bot Discord professionnel multi-fonction (hors musique)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "VotreNom",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.16.0",
+    "dotenv": "^16.4.5",
+    "chalk": "^5.3.0"
+  }
+}
