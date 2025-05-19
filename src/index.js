@@ -41,7 +41,15 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
-  const { default: event } = await import(`file://${filePath}`);
+  const module = await import(`file://${filePath}`);
+
+  if (!module.default) {
+    console.warn(chalk.yellow(`⚠️ Le fichier ${file} dans events n'exporte pas par défaut.`));
+    continue;
+  }
+
+  const event = module.default;
+
   if (event.once) {
     client.once(event.name, (...args) => event.execute(...args, client));
   } else {
