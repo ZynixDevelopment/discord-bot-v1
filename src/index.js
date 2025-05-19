@@ -1,8 +1,13 @@
-require('dotenv').config();
-const { Client, GatewayIntentBits, Collection, Partials } = require('discord.js');
-const chalk = require('chalk');
-const fs = require('node:fs');
-const path = require('node:path');
+import 'dotenv/config';
+import chalk from 'chalk';
+import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Nécessaire pour __dirname en ESModule
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialisation du client
 const client = new Client({
@@ -24,18 +29,19 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 // Chargement dynamique des commandes
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
-  const command = require(filePath);
+  const { default: command } = await import(`file://${filePath}`);
   if ('data' in command && 'execute' in command) {
     client.commands.set(command.data.name, command);
   }
 }
 
-// Gestionnaire d'événements (exemple : logs, bienvenue, tickets, etc.)
+// Gestionnaire d'événements
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
-  const event = require(filePath);
+  const { default: event } = await import(`file://${filePath}`);
   if (event.once) {
     client.once(event.name, (...args) => event.execute(...args, client));
   } else {
