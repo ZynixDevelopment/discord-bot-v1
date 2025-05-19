@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, PermissionsBitField } from 'discord.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('ticket')
     .setDescription('Crée un salon de ticket privé'),
+
   async execute(interaction) {
     const guild = interaction.guild;
     const user = interaction.user;
@@ -16,20 +17,24 @@ module.exports = {
 
     channel = await guild.channels.create({
       name: channelName,
-      type: 0, // 0 = GUILD_TEXT
+      type: ChannelType.GuildText,
       permissionOverwrites: [
         {
           id: guild.roles.everyone,
-          deny: ['ViewChannel']
+          deny: [PermissionsBitField.Flags.ViewChannel],
         },
         {
           id: user.id,
-          allow: ['ViewChannel', 'SendMessages', 'AttachFiles']
-        }
-      ]
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages,
+            PermissionsBitField.Flags.AttachFiles,
+          ],
+        },
+      ],
     });
 
     await channel.send(`Bonjour ${user}, explique ton problème ici. Un membre du staff va te répondre.`);
-    await interaction.reply({ content: `Ticket créé : ${channel}`, ephemeral: true });
+    await interaction.reply({ content: `🎫 Ticket créé : ${channel}`, ephemeral: true });
   }
 };
